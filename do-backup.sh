@@ -5,12 +5,13 @@ if [ ! -z $DRYRUN ]; then
 fi
 
 backup() {
-    if [ ! -f $1/.restic-exclude ]; then
-        touch $1/.restic-exclude
+    exclude_arg=""
+    if [ -f $1/.restic-exclude ]; then
+        exclude_arg="--exclude-file $1/.restic-exclude"
     fi
 
     echo "$(date +%y-%m-%dT%H:%M:%S) [INFO] Backing up $1..."
-    if restic backup $DRYRUN_ARG -H $HOSTNAME --exclude-caches --one-file-system --exclude-file $1/.restic-exclude $1; then
+    if restic backup $DRYRUN_ARG -H $HOSTNAME --exclude-caches --one-file-system $exclude_arg $1; then
         echo "$(date +%y-%m-%dT%H:%M:%S) [INFO] Successfully backed up $1"
     else
         echo "$(date +%y-%m-%dT%H:%M:%S) [ERROR] Failed to backup $1"
